@@ -1,19 +1,22 @@
 package personnages;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Humain {
 	private String nom;
 	private String boisson;
 	protected int argent;
-	private ArrayList<Humain> memoire;
-	public static final int NB_CONNAISSANCES_MAX = 3;
+	private Humain[] memoire;
+	protected int nbConnaissances;
+	public static final int NB_CONNAISSANCES_MAX = 30;
 
 	public Humain(String nom, String boisson, int argent) {
 		this.nom = nom;
 		this.boisson = boisson;
 		this.argent = argent;
-		this.memoire = new ArrayList<>();
+		this.memoire = new Humain[NB_CONNAISSANCES_MAX];
+		this.nbConnaissances = 0;
 	}
 
 	public void parler(String texte) {
@@ -56,29 +59,29 @@ public class Humain {
 
 	public void faireConnaissance(Humain humain) {
 		direBonjour();
-		humain.repondre(humain);
+		humain.repondre(this);
 		memoriser(humain);
 	}
 
 	private void repondre(Humain humain) {
-		humain.direBonjour();
-		humain.memoriser(this);
+		this.direBonjour();
+		this.memoriser(humain);
 	}
 
 	private void memoriser(Humain humain) {
+		memoire[nbConnaissances % NB_CONNAISSANCES_MAX] = humain;
+		nbConnaissances =+ 1;
 
-		if (memoire.size() >= NB_CONNAISSANCES_MAX) {
-
-			memoire.remove(0);
-		}
-		memoire.add(humain);
 	}
 
 	public void afficherMemoire() {
-		String connaissances = "";
-		for (Humain humain : memoire) {
-			connaissances = connaissances + humain.getNom() + ", ";
-			
+		String connaissances = memoire[0].getNom();
+		for (int i = 1; i < memoire.length; i++) {
+			if (memoire[i] != null) {
+				connaissances = connaissances + ", " + memoire[i].getNom();
+			} else {
+				break;
+			}
 		}
 		parler("Je connais beaucoup de monde dont : " + connaissances);
 	}
